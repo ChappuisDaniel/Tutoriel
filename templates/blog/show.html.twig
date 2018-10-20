@@ -13,11 +13,12 @@
     </article>
 
     <section id="commentaires">
+    <h1>Commentaires ({{ article.comments | length }})</h1>
         {% for comment in article.comments %}
             <div class="comment">
                 <div class="row">
                     <div class="col-3">
-                        {{ comment.author }} (<small>{{ comment.createdAt | date('d/m/Y à H:i') }}</small>)
+                        {{ comment.author }} <br> (<small>{{ comment.createdAt | date('d/m/Y à H:i') }}</small>)
                     </div>
                     <div class="col">
                         {{ comment.content | raw }}
@@ -26,5 +27,27 @@
             </div>
         {% endfor %}
     </section>
+
+    {% if app.user %}
+        {{ form_start(formComment) }}
+        {{ form_row(formComment.author, {
+            'label':"Nom d'utilisateur",
+            'attr':{
+                'placeholder':"Nom d'utilisateur"
+            }
+        })}}
+        {{ form_row(formComment.content, {
+            'label':"Commentaire",
+            'attr':{
+                'placeholder':"Commentaire..."
+            }
+        })}}
+        <button type="submit" class="btn btn-success">
+            Commenter
+        </button>
+        {{ form_end(formComment) }}
+    {% else %}
+        <p>Connecte toi.</p>
+    {% endif %}
 
 {% endblock %}

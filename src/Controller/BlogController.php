@@ -2,18 +2,21 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Form\ArticleType;
+
+use App\Form\CommentType;
 use App\Repository\ArticleRepository;
+
+use Symfony\Component\HttpFoundation\Request;
 
 use Doctrine\Common\Persistence\ObjectManager;
 
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class BlogController extends AbstractController
 {
@@ -79,9 +82,27 @@ class BlogController extends AbstractController
      * 
      * @Route("/blog/{id}", name="blog_show")
      */
-    public function show(Article $article) {
+    public function show(Article $article, Request $request, ObjectManager $manager) {
+        $comment = new Comment();
+        
+        $form = $this->createForm(CommentType::class, $comment);
+
+        // Entregistrement du commentaire
+        $form -> handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $comment->setCreatedAt(new \DateTime);
+            $comment->setArticle($article);
+
+            $manager->persist($comment);
+            $manager->flush();
+
+            // Redirection sur la page de lecture
+            return $this->redirectToRoute('blog_show', ['id' => $article->getId()]);
+        }
+
             return $this->render('blog/show.html.twig', [
             'article' => $article,
+            'formComment' => $form->createView(),
         ]);
     }
 
