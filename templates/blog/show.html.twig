@@ -6,9 +6,10 @@
         <h2>{{ article.title }}</h2>
         <div class="metadata">Ecrit le {{ article.createdAt | date('d/m/Y') }}. </div>
         <div class="content">
-            <img src="{{ article.image }}" alt="">
-            {{ article.content | raw }}
+            <img src="{{ article.image }}" alt="Image">
+            <p>{{ article.content }}</p>
         </div>
+        <a href="{{ path('blog_edit', { 'id':article.id }) }}" class="btn btn-primary">Modifier</a>
     </article>
 
 {% endblock %}
